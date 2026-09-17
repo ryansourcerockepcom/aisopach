@@ -2,7 +2,7 @@
    1. mobile nav toggle
    2. the access form: POSTs JSON to window.AISOPACH_ACCESS_ENDPOINT when one is
       configured, otherwise falls back to a prefilled mail draft so no lead is lost.
-   3. motion: parallax layers, scroll reveals, count-up numerals, hero panel tilt.
+   3. motion: parallax backgrounds, scroll reveals, count-up numerals.
       Transform/opacity only, one rAF loop, and all of it steps aside for
       prefers-reduced-motion. */
 (function () {
@@ -144,23 +144,5 @@
       });
     }, { threshold: 0.6 });
     nums.forEach(function (el) { io2.observe(el); });
-  }
-
-  // Tilt: the hero panel leans a few degrees toward the pointer on hover-capable
-  // devices, and the isopach map inside it drifts the other way for depth.
-  var panel = document.querySelector(".hero-panel");
-  if (panel && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    var inner = panel.querySelector("svg");
-    panel.addEventListener("pointermove", function (e) {
-      var r = panel.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5;
-      var y = (e.clientY - r.top) / r.height - 0.5;
-      panel.style.transform = "perspective(1100px) rotateX(" + (-y * 5).toFixed(2) + "deg) rotateY(" + (x * 6).toFixed(2) + "deg) translateZ(0)";
-      if (inner) { inner.style.transform = "translate3d(" + (-x * 10).toFixed(1) + "px," + (-y * 10).toFixed(1) + "px,0)"; }
-    });
-    panel.addEventListener("pointerleave", function () {
-      panel.style.transform = "";
-      if (inner) { inner.style.transform = ""; }
-    });
   }
 })();

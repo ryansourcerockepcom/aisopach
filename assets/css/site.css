@@ -104,60 +104,12 @@ svg { display: block; }
   border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(52, 226, 122, .10) 0%, rgba(52, 226, 122, 0) 62%);
 }
-/* hero depth: warm strata photo (slow), green log traces (mid), text (fixed).
-   Each layer is oversized so parallax never shows an edge. */
-.hero-layers { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.hero-layers > * { position: absolute; left: 0; right: 0; top: -18%; height: 136%; will-change: transform; }
-.hero-photo {
-  object-fit: cover; width: 100%; opacity: .62;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
-}
-.hero-traces {
+/* faint well-log strata behind the hero; fades out before the stat band */
+.hero::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .55;
   background: url("/assets/img/hero-bg.jpg") center / cover no-repeat;
-  mix-blend-mode: screen; opacity: .7;
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
-}
-.hero-shade {
-  top: 0; height: 100%;
-  background:
-    linear-gradient(90deg, rgba(4,9,10,.86) 0%, rgba(4,9,10,.55) 45%, rgba(4,9,10,.15) 100%),
-    linear-gradient(180deg, rgba(4,9,10,.25) 0%, rgba(4,9,10,0) 40%, var(--ink-0) 100%);
-}
-.hero-panel { transition: transform .25s ease; transform-style: preserve-3d; will-change: transform; }
-.hero-panel svg { transition: transform .25s ease; }
-.hero-grid {
-  position: relative; display: grid; gap: clamp(28px, 4vw, 64px);
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 560px); align-items: start;
-}
-.hero h1 { margin-top: 22px; }
-.hero h1 em { color: var(--phos); font-style: normal; }
-.hero .lede { font-size: clamp(16px, 1.45vw, 19px); margin-top: 26px; max-width: 34ch; }
-.hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
-.hero-live { display: flex; gap: 12px; align-items: flex-start; margin-top: 32px; font-size: 13px; color: var(--dim); }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--phos); flex: 0 0 auto; margin-top: 6px; }
-
-.panel {
-  position: relative; border: 1px solid var(--rule); border-radius: 12px;
-  background: var(--ink-1); overflow: hidden;
-}
-.panel-bar {
-  position: absolute; inset: 0 0 auto 0; height: 40px; padding: 0 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: rgba(4, 9, 10, .72); border-bottom: 1px solid var(--rule);
-  font-family: var(--mono); font-size: 10.5px; letter-spacing: .18em; color: var(--dim);
-}
-.panel-bar .on { color: var(--phos); flex: 0 0 auto; margin-left: 12px; }
-.panel-bar > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.panel-foot {
-  position: absolute; inset: auto 16px 16px 16px;
-  display: flex; align-items: flex-end; justify-content: space-between;
-}
-.panel-foot .num { font-size: 34px; line-height: 1; }
-.panel-foot span {
-  display: block; font-family: var(--mono); font-size: 10px;
-  letter-spacing: .16em; color: var(--fog); margin-top: 6px;
 }
 .hero-panel svg { width: 100%; height: auto; }
 
@@ -228,27 +180,22 @@ section.alt .card { background: var(--ink-0); }
 .lock p { font-size: 14px; color: var(--dim); margin-top: 6px; }
 .after-locks { padding-top: 26px; font-size: 14.5px; line-height: 1.7; color: var(--fog); }
 
-/* ---- photo band ---- */
-.band-photo {
-  position: relative; overflow: hidden; isolation: isolate;
-  height: clamp(380px, 62vh, 680px); display: grid; place-items: center;
-  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+/* ---- subdued photo backgrounds ----
+   A warm photograph sits behind a lower section at low opacity, masked top and
+   bottom so it never shows an edge, and drifts slowly against the scroll. */
+.has-bg { position: relative; isolation: isolate; overflow: hidden; }
+.bg-photo { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.bg-photo img {
+  position: absolute; left: 0; right: 0; top: -16%; width: 100%; height: 132%;
+  object-fit: cover; opacity: .2; will-change: transform;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
 }
-.band-photo img {
-  position: absolute; left: 0; right: 0; top: -22%; width: 100%; height: 144%;
-  object-fit: cover; z-index: -2; will-change: transform;
+.bg-photo.dim img { opacity: .14; }
+.bg-photo::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(70% 80% at 50% 50%, rgba(4,9,10,0) 0%, rgba(4,9,10,.45) 100%);
 }
-.band-photo::before {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background:
-    linear-gradient(180deg, var(--ink-0) 0%, rgba(4,9,10,.35) 22%, rgba(4,9,10,.35) 78%, var(--ink-0) 100%),
-    radial-gradient(60% 70% at 50% 55%, rgba(4,9,10,0) 0%, rgba(4,9,10,.55) 100%);
-}
-.band-photo .wrap { text-align: center; padding: 0 var(--pad); }
-.band-photo .eyebrow { color: var(--amber); }
-.band-photo h2 { font-size: clamp(30px, 4.4vw, 58px); max-width: 18ch; margin: 18px auto 0; text-shadow: 0 2px 30px rgba(4,9,10,.8); }
-.band-photo h2 em { color: var(--phos); font-style: normal; }
-.band-photo p { margin-top: 20px; color: var(--fog); font-size: clamp(15px, 1.3vw, 17px); max-width: 52ch; margin-left: auto; margin-right: auto; }
 
 /* ---- reveal ---- */
 .motion-on .reveal { opacity: 0; transform: translate3d(0, 22px, 0); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
@@ -329,9 +276,4 @@ form.access .btn { width: 100%; margin-top: 24px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .btn:hover { transform: none; }
-  .hero-panel, .hero-panel svg { transition: none; }
-}
-@media (max-width: 760px) {
-  .hero-photo { opacity: .5; }
-  .band-photo { height: clamp(320px, 55vh, 480px); }
 }
