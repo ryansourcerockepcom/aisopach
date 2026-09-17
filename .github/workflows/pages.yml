@@ -35,6 +35,13 @@ jobs:
           grep -q "aisopach" index.html
           echo "Site files present."
 
+      - name: Stamp asset URLs with the commit SHA
+        # Pages caches assets for 10 minutes; a fresh query string per deploy
+        # means a browser never pairs new HTML with an old stylesheet or script.
+        run: |
+          sed -i -E "s/(site\.(css|js))\?v=[A-Za-z0-9]*/\1?v=${GITHUB_SHA::7}/g" index.html
+          grep -o 'site\.\(css\|js\)?v=[a-f0-9]*' index.html
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
