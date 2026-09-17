@@ -73,12 +73,14 @@
   var layers = [].slice.call(document.querySelectorAll("[data-parallax]")).map(function (el) {
     return { el: el, speed: parseFloat(el.getAttribute("data-parallax")) || 0.3, parent: el.parentElement };
   });
-  var ticking = false;
+  var ticking = false, trail = 0;
   function frame() {
     ticking = false;
+    clearTimeout(trail);
     var vh = window.innerHeight;
     for (var i = 0; i < layers.length; i++) {
       var L = layers[i];
+      if (L.custom) { L.custom(); continue; }
       var r = L.parent.getBoundingClientRect();
       if (r.bottom < -vh || r.top > vh * 2) { continue; }
       var centre = r.top + r.height / 2 - vh / 2;
@@ -87,11 +89,37 @@
   }
   function onScroll() {
     if (!ticking) { ticking = true; requestAnimationFrame(frame); }
+    // trailing call so the resting position is always applied, even if a
+    // frame is dropped while the tab is busy or not drawing
+    clearTimeout(trail);
+    trail = setTimeout(frame, 80);
   }
-  if (layers.length) {
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    frame();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+
+  // Pipeline scene: while the strip is pinned, scroll progress picks the active
+  // step and fills the progress line. Below 761px the CSS makes it a static
+  // list and the scene has no extra travel, so this just selects step one.
+  var scene = document.getElementById("pipeline");
+  if (scene) {
+    var sticky = scene.querySelector(".pipe-sticky");
+    var cells = scene.querySelectorAll(".pipe > div");
+    var caps = scene.querySelectorAll(".pipe-cap");
+    var bar = scene.querySelector(".pipe-progress i");
+    var current = -1;
+    var setStep = function (n) {
+      if (n === current) { return; }
+      current = n;
+      for (var k = 0; k < cells.length; k++) { cells[k].classList.toggle("active", k === n); }
+      for (var m = 0; m < caps.length; m++) { caps[m].classList.toggle("active", m === n); }
+    };
+    layers.push({ custom: function () {
+      var travel = scene.offsetHeight - sticky.offsetHeight;
+      if (travel <= 0) { setStep(0); return; }
+      var p = Math.min(Math.max((78 - scene.getBoundingClientRect().top) / travel, 0), 1);
+      if (bar) { bar.style.width = (p * 100).toFixed(1) + "%"; }
+      setStep(Math.min(cells.length - 1, Math.floor(p * cells.length)));
+    } });
   }
 
   // Reveal: .reveal elements fade and rise once when they enter the viewport.
@@ -145,4 +173,7 @@
     }, { threshold: 0.6 });
     nums.forEach(function (el) { io2.observe(el); });
   }
+
+  // the scene registers after the listeners, so the first frame runs last
+  frame();
 })();

@@ -144,6 +144,16 @@ svg { display: block; }
   letter-spacing: .16em; color: var(--fog); margin-top: 6px;
 }
 .hero-panel svg { width: 100%; height: auto; }
+/* the contours crawl slowly along themselves and breathe; markers blink in turn */
+.motion-on .hero-panel svg path[stroke="#34E27A"] { stroke-dasharray: 10 6; animation: contour-crawl 26s linear infinite, contour-breathe 9s ease-in-out infinite; }
+.motion-on .hero-panel svg path[stroke="#1C7F49"] { stroke-dasharray: 7 7; animation: contour-crawl 38s linear infinite reverse; }
+.motion-on .hero-panel svg path[stroke="#1B2C2F"] { stroke-dasharray: 4 8; animation: contour-crawl 60s linear infinite; }
+.motion-on .hero-panel svg circle[fill="#34E27A"] { animation: marker-blink 4.5s ease-in-out infinite; }
+.motion-on .hero-panel svg circle[fill="#34E27A"]:nth-of-type(3n) { animation-delay: -1.5s; }
+.motion-on .hero-panel svg circle[fill="#34E27A"]:nth-of-type(3n+1) { animation-delay: -3s; }
+@keyframes contour-crawl { to { stroke-dashoffset: -160; } }
+@keyframes contour-breathe { 50% { opacity: .9; } }
+@keyframes marker-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 
 /* ---- stat band ---- */
 .band {
@@ -189,6 +199,28 @@ section.alt .card { background: var(--ink-0); }
 
 .cards-2 { display: grid; gap: 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 48px; }
 
+/* pipeline scene: pinned strip, scroll picks the step. Plain stacked list on
+   small screens and under reduced motion. */
+.pipe-scene { margin-top: 44px; }
+.pipe-sticky { display: flex; flex-direction: column; gap: 26px; }
+.pipe-head { display: flex; align-items: center; gap: 22px; }
+.pipe-progress { flex: 1; height: 2px; background: var(--rule); border-radius: 1px; overflow: hidden; }
+.pipe-progress i { display: block; height: 100%; width: 0; background: var(--phos); transition: width .15s linear; }
+.pipe-captions { position: relative; }
+.pipe-cap { display: flex; gap: 22px; align-items: flex-start; padding: 22px 0; border-top: 1px solid var(--rule); }
+.pipe-cap > .num { font-size: 40px; line-height: 1; color: var(--phos); flex: 0 0 72px; }
+.pipe-cap h3 { font-size: clamp(20px, 2vw, 26px); }
+.pipe-cap p { font-size: 15px; line-height: 1.65; color: var(--fog); margin-top: 10px; max-width: 64ch; }
+.pipe > div { transition: background .3s ease, border-color .3s ease; }
+.pipe > div.active { background: var(--ink-1); border-left-color: var(--phos); }
+.pipe > div.active h3 { color: var(--white); }
+@media (min-width: 761px) {
+  .motion-on .pipe-scene { height: 320vh; }
+  .motion-on .pipe-sticky { position: sticky; top: 78px; min-height: calc(100vh - 78px); justify-content: center; }
+  .motion-on .pipe-captions { min-height: 190px; }
+  .motion-on .pipe-cap { position: absolute; inset: 0 auto auto 0; width: 100%; opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity .45s ease, transform .45s ease; pointer-events: none; }
+  .motion-on .pipe-cap.active { opacity: 1; transform: none; pointer-events: auto; }
+}
 .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 12px; background: var(--ink-0); overflow: hidden; margin-top: 8px; }
 .pipe > div { padding: 26px 22px; border-left: 2px solid var(--rule); }
 .pipe > div:first-child { border-left-color: var(--rule); }
@@ -224,6 +256,12 @@ section.alt .card { background: var(--ink-0); }
   mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
 }
 .bg-photo.dim img { opacity: .14; }
+.bg-photo video {
+  position: absolute; left: 0; right: 0; top: -16%; width: 100%; height: 132%;
+  object-fit: cover; opacity: .22; will-change: transform;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
 .bg-photo::after {
   content: ""; position: absolute; inset: 0;
   background: radial-gradient(70% 80% at 50% 50%, rgba(4,9,10,0) 0%, rgba(4,9,10,.45) 100%);
