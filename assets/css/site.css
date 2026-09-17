@@ -54,7 +54,7 @@ svg { display: block; }
 .lede { font-size: clamp(15.5px, 1.3vw, 17px); line-height: 1.65; color: var(--fog); max-width: 68ch; }
 .muted { color: var(--dim); }
 .num { font-family: var(--doto); font-weight: 900; }
-.ph { font-family: var(--mono); color: var(--amber); border-bottom: 1px dashed var(--amber); }
+.card p b { color: var(--white); font-weight: 500; }
 .viz { max-width: 100%; height: auto; }
 /* every generated data visual scales down with its container */
 .card > svg, .card figure > svg, .panel > svg, .two-col > div > svg, .market svg {
@@ -92,16 +92,24 @@ svg { display: block; }
 .site-nav { display: flex; align-items: center; gap: 34px; }
 .site-nav a { color: var(--fog); font-size: 14px; font-weight: 400; }
 .site-nav a:hover { color: var(--white); }
-.site-nav .btn { min-height: 40px; padding: 10px 20px; font-size: 14px; }
+.site-nav .btn { min-height: 40px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--ink-0); }
+.site-nav .btn:hover { color: var(--ink-0); }
 .nav-toggle { display: none; background: none; border: 0; padding: 12px; cursor: pointer; }
 .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--fog); margin: 4px 0; }
 
 /* ---- hero ---- */
-.hero { position: relative; overflow: hidden; padding: clamp(44px, 6vw, 92px) var(--pad) clamp(40px, 5vw, 84px); }
+.hero { position: relative; isolation: isolate; overflow: hidden; padding: clamp(44px, 6vw, 92px) var(--pad) clamp(40px, 5vw, 84px); }
 .hero::before {
   content: ""; position: absolute; left: -180px; top: -140px; width: 760px; height: 760px;
   border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(52, 226, 122, .10) 0%, rgba(52, 226, 122, 0) 62%);
+}
+/* faint well-log strata behind the hero; fades out before the stat band */
+.hero::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .55;
+  background: url("/assets/img/hero-bg.jpg") center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
 }
 .hero-grid {
   position: relative; display: grid; gap: clamp(28px, 4vw, 64px);

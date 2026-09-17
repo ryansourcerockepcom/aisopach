@@ -7,7 +7,9 @@ Two routes. Pick one; don't run both at the same domain.
 - **B — S3 + CloudFront.** Keeps the site on AWS beside the Fifth Meridian platform, gives you WAF, logs
   and a shared certificate. More moving parts.
 
-Both assume `aisopach.com` is registered at GoDaddy, like `fifthmeridian.ai`.
+`aisopach.com` is registered at GoDaddy but its nameservers already point at **Route 53** (hosted zone
+`Z023984237SGPGMB18XV6`, account `421974099016`). All DNS changes below go through Route 53, not the GoDaddy
+DNS panel. Ready-made change batches live in `docs/dns/`.
 
 ---
 
@@ -28,26 +30,20 @@ git push -u origin main
 first run gives you a `https://<user>.github.io/aisopach/` URL — the `CNAME` file switches that to the
 custom domain once DNS is in place.
 
-### 3. DNS at GoDaddy
+### 3. DNS in Route 53
 
-In GoDaddy → **My Products → aisopach.com → DNS → Manage zones**, set:
+One command — the change batch has GitHub Pages' four A records, four AAAA records, and `www` →
+`ryansourcerockepcom.github.io`:
 
-| Type | Name | Value | TTL |
-|---|---|---|---|
-| A | `@` | `185.199.108.153` | 600 |
-| A | `@` | `185.199.109.153` | 600 |
-| A | `@` | `185.199.110.153` | 600 |
-| A | `@` | `185.199.111.153` | 600 |
-| CNAME | `www` | `<your-github-user>.github.io` | 600 |
+```bash
+aws route53 change-resource-record-sets --hosted-zone-id Z023984237SGPGMB18XV6 --change-batch file://docs/dns/pages-aisopach.json
+```
 
-(Those four A records are GitHub's published Pages addresses. If GitHub changes them, its own docs are the
-source of truth.)
+Then in **Settings → Pages → Custom domain**, enter `aisopach.com` and save. Once the check passes, tick
+**Enforce HTTPS** — the certificate is issued automatically and takes a few minutes.
 
-Then back in **Settings → Pages → Custom domain**, enter `aisopach.com` and save. Once the check passes,
-tick **Enforce HTTPS** — the certificate is issued automatically and takes a few minutes.
-
-DNS propagation is usually minutes, occasionally an hour. `nslookup aisopach.com` tells you when it has
-landed.
+DNS propagation is usually minutes. `nslookup aisopach.com` tells you when it has landed. (If GitHub ever
+changes its Pages addresses, its own docs are the source of truth.)
 
 ### 4. Verify
 
@@ -96,18 +92,10 @@ Create a CloudFront distribution with:
 - **Custom SSL certificate:** the one from step 2
 - **Compress objects automatically:** yes
 
-### 4. DNS at GoDaddy
+### 4. DNS in Route 53
 
-GoDaddy cannot point an apex record at a CloudFront hostname — the same limitation `fifthmeridian.ai` hits.
-Two ways out:
-
-**Option 1 — move DNS to Route 53 (recommended).** Create a hosted zone for `aisopach.com`, copy the
-existing records into it, then change the nameservers at GoDaddy to the four Route 53 gave you. You can then
-add an **A / ALIAS** record for the apex pointing at the distribution, and the same for `www`. Propagation
-takes up to 48 hours, usually far less.
-
-**Option 2 — stay at GoDaddy.** `CNAME www → dxxxxx.cloudfront.net`, then use GoDaddy's **Forwarding** to
-301 the apex to `https://www.aisopach.com`. Works, but the apex is a redirect rather than the real site.
+The zone is already in Route 53, so this is just an **A / ALIAS** record for the apex pointing at the
+distribution, and the same for `www`.
 
 ### 5. Redeploying
 
@@ -120,6 +108,19 @@ Worth turning into a workflow once the bucket and distribution exist — the sam
 Fifth Meridian platform's `deploy.yml`.
 
 ---
+
+## Mail for access@aisopach.com
+
+Inbound mail is handled on AWS and forwarded to `ryan@sourcerockep.com`. It is built and active; the only
+thing it needs is DNS (see `infra/mail-forwarder/README.md`):
+
+```bash
+aws route53 change-resource-record-sets --hosted-zone-id Z023984237SGPGMB18XV6 --change-batch file://docs/dns/ses-aisopach.json
+aws route53 change-resource-record-sets --hosted-zone-id Z08917152NOBYQ3TN99L --change-batch file://docs/dns/ses-sourcerockep.json
+```
+
+The first adds MX, SPF, DMARC and DKIM for `aisopach.com`. The second adds DKIM for `sourcerockep.com` so
+SES (still in sandbox) is allowed to send to it.
 
 ## The access form endpoint
 

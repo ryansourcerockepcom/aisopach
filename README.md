@@ -45,9 +45,8 @@ code**, not images — they scale, theme with the palette and cost nothing to lo
 
 ## Before this goes live
 
-1. **Fill the two placeholders.** The amber dashed values in the E-03 card — `[HOURS]` for runsheet
-   turnaround and `[YOUR %]` for land-spend reduction — are the only unfilled numbers on the page. Search
-   `class="ph"` in `index.html`.
+1. **Numbers in the E-03 card** — 24-hour runsheet turnaround and a 70% land-acquisition cost reduction — are
+   claims about the live suite. Keep them current.
 2. **Wire the form.** Out of the box the access form opens a prefilled mail draft to
    `access@aisopach.com` (set via `data-fallback-email` on the `<form>`). To capture submissions properly,
    set an endpoint before `site.js` loads:

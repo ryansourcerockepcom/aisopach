@@ -1,0 +1,5 @@
+{"Comment":"GitHub Pages for aisopach.com","Changes":[
+{"Action":"UPSERT","ResourceRecordSet":{"Name":"aisopach.com","Type":"A","TTL":600,"ResourceRecords":[{"Value":"185.199.108.153"},{"Value":"185.199.109.153"},{"Value":"185.199.110.153"},{"Value":"185.199.111.153"}]}},
+{"Action":"UPSERT","ResourceRecordSet":{"Name":"aisopach.com","Type":"AAAA","TTL":600,"ResourceRecords":[{"Value":"2606:50c0:8000::153"},{"Value":"2606:50c0:8001::153"},{"Value":"2606:50c0:8002::153"},{"Value":"2606:50c0:8003::153"}]}},
+{"Action":"UPSERT","ResourceRecordSet":{"Name":"www.aisopach.com","Type":"CNAME","TTL":600,"ResourceRecords":[{"Value":"ryansourcerockepcom.github.io"}]}}
+]}
