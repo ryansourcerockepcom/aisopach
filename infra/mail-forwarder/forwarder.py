@@ -1,4 +1,4 @@
-"""Forwards mail received by SES for aisopach.com to a real mailbox.
+"""Forwards mail received by SES for aisopach.com (and brightmarkmed.com) to a real mailbox.
 
 SES stores the raw message in S3, then invokes this. We re-send it with a
 verified From (so DKIM/DMARC pass) and the original sender in Reply-To, so
@@ -35,7 +35,7 @@ def handler(event, _ctx):
             del msg[h]
 
         display = re.sub(r"[<>\r\n]", "", original_from).strip() or "unknown sender"
-        msg["From"] = f"{display} via aisopach.com <{FROM}>"
+        msg["From"] = f"{display} via {FROM.split('@')[1]} <{FROM}>"
         msg["Reply-To"] = original_from
         msg["To"] = FORWARD_TO
         msg["X-Forwarded-For-Original-To"] = original_to

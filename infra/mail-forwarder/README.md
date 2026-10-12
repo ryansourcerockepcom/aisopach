@@ -29,6 +29,26 @@ powershell -Command "Compress-Archive -Path forwarder.py -DestinationPath forwar
 aws lambda update-function-code --function-name aisopach-mail-forwarder --region us-east-1 --zip-file fileb://forwarder.zip
 ```
 
+## brightmarkmed.com (added 2026-10-11)
+
+Same code, deployed as a second Lambda, replacing Google Workspace for that domain. Everything at
+`*@brightmarkmed.com` → ryan@sourcerockep.com, sent as `<sender> via brightmarkmed.com <forward@brightmarkmed.com>`.
+
+| Piece | Name |
+|---|---|
+| SES receipt rule | `brightmarkmed-forward-all` in the same active set `aisopach-inbound` (SES allows only one active set) |
+| S3 | `aisopach-mail`, prefix `brightmarkmed/` (same 90-day expiry) |
+| Lambda | `brightmarkmed-mail-forwarder`, env `MAIL_PREFIX=brightmarkmed/`, `FORWARD_FROM=forward@brightmarkmed.com`; reuses role `aisopach-mail-forwarder` |
+| DNS (Route 53 zone `Z06872593MKLMQ1GB5I11`) | MX `10 inbound-smtp.us-east-1.amazonaws.com`, SPF `include:amazonses.com`, `_amazonses` TXT, 3 SES DKIM CNAMEs |
+
+Google Workspace was cancelled 2026-10-11 and its DNS records (`google._domainkey`, `dc-aa8e722993._spfm`,
+`google-site-verification`) were removed.
+
+## messerworksllc.com (added 2026-10-11)
+
+Identical setup, also replacing Google Workspace: rule `messerworks-forward-all`, S3 prefix `messerworks/`, Lambda
+`messerworks-mail-forwarder` (`FORWARD_FROM=forward@messerworksllc.com`), Route 53 zone `Z00006981XBOSS9GPCB2T`.
+
 ## Getting out of the SES sandbox
 
 Not needed for the forward (destination domain is verified). Request production access only if the site
