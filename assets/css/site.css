@@ -94,6 +94,8 @@ svg { display: block; }
 .site-nav a:hover { color: var(--white); }
 .site-nav .btn { min-height: 40px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--ink-0); }
 .site-nav .btn:hover { color: var(--ink-0); }
+.site-nav .nav-login { min-height: 40px; padding: 10px 18px; font-size: 14px; color: var(--white); }
+.site-nav .nav-login:hover { color: var(--phos); }
 .nav-toggle { display: none; background: none; border: 0; padding: 12px; cursor: pointer; }
 .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--fog); margin: 4px 0; }
 
